@@ -39,6 +39,25 @@ goldbach(number)  // Goldbach's assumption
 
 """
 
+def pi(maxK=70, prec=1008, disp=1007):
+    """
+    maxK: nuber of iterations
+    prec: precision of decimal places
+    disp: number of decimal places shown
+    """
+    from decimal import Decimal as Dec, getcontext as gc
+    gc().prec = prec
+    K, M, L, X, S = 6, 1, 13591409, 1, 13591409 
+    for k in range(1, maxK+1):
+        M = Dec((K**3 - (K<<4)) * M / k**3)
+        L += 545140134
+        X *= -262537412640768000
+        S += Dec(M * L) / X
+        K += 12
+    pi = 426880 * Dec(10005).sqrt() / S
+    pi = Dec(str(pi)[:disp])
+    return pi
+
 def isPrime(number):
     """
         input: positive integer 'number'
@@ -54,15 +73,15 @@ def isPrime(number):
     
     # 0 and 1 are none primes. 
     if number <= 1:
-        status = False
-    
-    for divisor in range(2,int(round(math.sqrt(number)))+1):
+        return False
         
-        # if 'number' divisible by 'divisor' then sets 'status'
-        # of false and break up the loop. 
-        if number % divisor == 0:
-            status = False
-            break
+    # all even numbers except of 2 are no primes.    
+    if number % 2 == 0 and number > 2:
+        return False
+        
+    # if 'number' divisible by 'divisor' then sets 'status' to false.
+    # lazy evaluation breaks the all loop on first false.
+    status = all(number % divisor for divisor in range(3, int(math.sqrt(number)) + 1, 2))
     
     # precondition
     assert isinstance(status,bool), "'status' must been from type bool"    
